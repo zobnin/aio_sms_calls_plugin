@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+            android:title="@string/calls">
+    </PreferenceCategory>
+
+    <ListPreference
+            android:key="calls_num"
+            android:defaultValue="3"
+            android:entries="@array/linesArray"
+            android:entryValues="@array/linesValues"
+            android:title="@string/number_of_lines"/>
+    />
+
+    <ListPreference
+            android:key="calls_truncate_method"
+            android:title="@string/calls_truncate"
+            android:defaultValue="by_last_name"
+            android:entries="@array/truncate_methods"
+            android:entryValues="@array/truncate_methods_values"
+    />
+
+    <CheckBoxPreference
+            android:key="calls_confirmation"
+            android:title="@string/calls_confirmation"
+            android:summary="@string/calls_confirmation_summary"
+            android:defaultValue="true"
+    />
+    <CheckBoxPreference
+            android:key="calls_show_unknown"
+            android:title="@string/calls_show_unknown"
+            android:summary="@string/calls_show_unknown"
+            android:defaultValue="false"
+    />
+
+    <PreferenceCategory
+            android:title="@string/last_sms">
+    </PreferenceCategory>
+
+    <ListPreference
+            android:key="sms_num"
+            android:title="@string/number_of_lines"
+            android:defaultValue="3"
+            android:entries="@array/linesArray"
+            android:entryValues="@array/linesValues"/>
+
+    <CheckBoxPreference
+            android:key="sms_update_on_resume"
+            android:title="@string/update_on_resume"
+            android:summary="@string/update_on_resume_summary"
+            android:defaultValue="false"
+    />
+
+</PreferenceScreen>
