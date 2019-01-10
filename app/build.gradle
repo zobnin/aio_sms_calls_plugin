@@ -13,8 +13,8 @@ android {
         minSdkVersion 21
         //noinspection ExpiredTargetSdkVersion
         targetSdkVersion 22
-        versionCode 12
-        versionName "1.0.11"
+        versionCode 13
+        versionName "1.0.12"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -35,6 +35,7 @@ dependencies {
     implementation "org.jetbrains.anko:anko-sdk19:$ANKO_VERSION"
     implementation 'com.mohamadamin.kpreferences:kpreferences:0.1'
     implementation 'com.squareup.okhttp3:okhttp:3.12.0'
+    implementation 'com.devs:acr:1.0.1'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
