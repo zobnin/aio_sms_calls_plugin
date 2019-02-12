@@ -88,7 +88,7 @@ class CallsPluginReceiver : BroadcastReceiver() {
             val radioButtons = if (contact != null) {
 
                 val radioButtons = mutableListOf<PluginRadioButton>()
-                openedPersonContacts = contacts.filter { it.id == contact.id }
+                openedPersonContacts = contacts.filter { it.id == contact.id }.distinctBy { it.phone }
 
                 openedPersonContacts?.apply {
                     var haveDefaultButton = false
@@ -175,7 +175,7 @@ class CallsPluginReceiver : BroadcastReceiver() {
                     id = MENU_BUTTON_SMS
                 ),
                 PluginButton(
-                    text = "SMS",
+                    text = "Info",
                     icon = context.getDrawable(R.drawable.ic_info).toBitmap(),
                     id = MENU_BUTTON_INFO
                 )
