@@ -21,20 +21,13 @@ class MainActivity : PreferenceActivity() {
             .replace(android.R.id.content, SettingsFragment())
             .commit()
 
-        checkForChinesePhone()
-    }
-
-    private fun checkForChinesePhone() {
-        if (Settings.showChinesePmWarning) {
-            val pmIntent = ChinesePhoneTools.getPowerManagerIntent(this)
-            pmIntent?.let {
-                showChinesePhoneWarning(pmIntent)
-            }
-            Settings.showChinesePmWarning = false
+        if (android.os.Build.VERSION.SDK_INT >= 23 && Settings.showBatteryOptWarning) {
+            showBatteryOptDialog()
+            Settings.showBatteryOptWarning = false
         }
     }
 
-    private fun showChinesePhoneWarning(intent: Intent) {
+    private fun showBatteryOptDialog() {
         AlertDialog.Builder(this).apply {
             setTitle(R.string.warning)
             setMessage(R.string.chinese_pm_warning)
@@ -42,7 +35,7 @@ class MainActivity : PreferenceActivity() {
 
             setPositiveButton(R.string.open_settings) { _, _ ->
                 try {
-                    startActivity(intent)
+                    startActivity(Intent("android.settings.IGNORE_BATTERY_OPTIMIZATION_SETTINGS"))
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
