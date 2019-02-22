@@ -368,14 +368,20 @@ class CallsPluginReceiver : BroadcastReceiver() {
     }
 
     private fun getCallById(id: Int): Call? {
-        val ids = stringToIds(Settings.callsIds)
+        try {
+            val ids = stringToIds(Settings.callsIds)
 
-        if (ids.isEmpty()) {
+            if (ids.isEmpty()) {
+                return null
+            }
+
+            val smsIdx = ids.indexOf(id)
+            return calls[smsIdx]
+
+        } catch (e: Exception) {
+            e.printStackTrace()
             return null
         }
-
-        val smsIdx = ids.indexOf(id)
-        return calls[smsIdx]
     }
 
 }

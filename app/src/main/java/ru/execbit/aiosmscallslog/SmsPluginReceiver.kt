@@ -240,14 +240,20 @@ class SmsPluginReceiver : BroadcastReceiver() {
     }
 
     private fun getSmsById(id: Int): Sms? {
-        val ids = stringToIds(Settings.smsIds)
+        try {
+            val ids = stringToIds(Settings.smsIds)
 
-        if (ids.isEmpty()) {
+            if (ids.isEmpty()) {
+                return null
+            }
+
+            val smsIdx = ids.indexOf(id)
+            return smses[smsIdx]
+
+        } catch (e: Exception) {
+            e.printStackTrace()
             return null
         }
-
-        val smsIdx= ids.indexOf(id)
-        return smses[smsIdx]
     }
 
     private suspend fun processSmsReceived(context: Context, intent: Intent) {
