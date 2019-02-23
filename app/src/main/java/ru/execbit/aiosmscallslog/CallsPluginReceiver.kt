@@ -351,8 +351,15 @@ class CallsPluginReceiver : BroadcastReceiver() {
             }
 
             "by_last_name" -> {
-                if (fullName.contains(' ')) {
-                    fullName.take(fullName.indexOf(' ') + 2) + '.'
+                if (fullName.trim().contains(' ')) {
+                    val nameList = fullName.split(' ')
+                    val firstName = nameList[0]
+                    val lastName = if (nameList[1].length > 1) {
+                        nameList[1].take(1) + '.'
+                    } else {
+                        nameList[1]
+                    }
+                    "$firstName $lastName"
                 } else {
                     if (fullName.length > 10) {
                         fullName.take(9) + '.'
