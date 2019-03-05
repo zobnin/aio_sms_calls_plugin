@@ -22,4 +22,5 @@
     <string name="by_symbols">Por simbolos</string>
     <string name="by_last_name">Por apellido</string>
     <string name="none">Ninguna</string>
+    <string name="invalid_uid">UID no válido. Reinstalar el plugin</string>
 </resources>

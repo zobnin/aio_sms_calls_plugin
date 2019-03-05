@@ -22,4 +22,5 @@
     <string name="by_symbols">Par des symboles</string>
     <string name="by_last_name">Par nom</string>
     <string name="none">Aucun</string>
+    <string name="invalid_uid">UID invalide. Réinstaller le plugin</string>
 </resources>
