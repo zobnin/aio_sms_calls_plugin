@@ -22,5 +22,4 @@
     <string name="by_symbols">Sembollerle</string>
     <string name="by_last_name">Soyadına göre</string>
     <string name="none">Yok</string>
-    <string name="invalid_uid">Geçersiz UID Eklentiyi yeniden yükle</string>
 </resources>

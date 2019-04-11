@@ -112,8 +112,6 @@ data class PluginError(
     // 0 - ok
     // 1 - no permission
     // 2 - exception
-    // 3 - invalid UID
-    // 4 - invalid action
     // >= 100 - other
     val errorCode: Int,
     val errorText: String

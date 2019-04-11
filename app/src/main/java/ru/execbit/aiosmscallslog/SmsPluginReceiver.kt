@@ -32,15 +32,6 @@ class SmsPluginReceiver : BroadcastReceiver() {
         CoroutineScope(Dispatchers.Default).launch {
             if (intent == null) return@launch
 
-            if (!checkUid(intent)) {
-                val result = PluginResult(
-                    from = cn,
-                    data = PluginError(3, context.getString(R.string.invalid_uid))
-                )
-                context.sendPluginResult(result)
-                return@launch
-            }
-
             when (intent.action) {
                 PluginIntentActions.PLUGIN_GET_DATA -> {
                     if (checkUid(intent)) {

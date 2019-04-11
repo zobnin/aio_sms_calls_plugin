@@ -23,5 +23,4 @@
     <string name="by_symbols">By symbols</string>
     <string name="by_last_name">By last name</string>
     <string name="none">None</string>
-    <string name="invalid_uid">Invalid UID. Reinstall plugin</string>
 </resources>

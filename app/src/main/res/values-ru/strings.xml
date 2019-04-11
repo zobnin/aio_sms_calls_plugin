@@ -22,5 +22,4 @@
     <string name="by_symbols">По символам</string>
     <string name="by_last_name">По фамилии</string>
     <string name="none">Никак</string>
-    <string name="invalid_uid">Неверный UID. Переустановите плагин</string>
 </resources>

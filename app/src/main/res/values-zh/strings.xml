@@ -22,5 +22,4 @@
     <string name="by_symbols">按符号</string>
     <string name="by_last_name">按姓氏</string>
     <string name="none">没有</string>
-    <string name="invalid_uid">无效的UID。重新安装插件</string>
 </resources>
