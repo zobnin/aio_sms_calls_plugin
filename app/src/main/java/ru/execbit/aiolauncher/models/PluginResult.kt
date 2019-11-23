@@ -24,6 +24,7 @@ class PluginResult(
     // * PluginMenu
     // * PluginMessage
     // * PluginError
+    // * PendingIntent
     val data: Parcelable? = null
 ): Parcelable
 

@@ -81,14 +81,17 @@ class CallsPluginReceiver : BroadcastReceiver() {
             val contact = contacts.find { PhoneNumberUtils.compare(it.phone, call.number) }
 
             if (!Settings.callsConfirmation) {
-                context.makeCall(call.number)
+                context.makeCall(cn, call.number)
                 return
             }
 
             val radioButtons = if (contact != null) {
 
                 val radioButtons = mutableListOf<PluginRadioButton>()
-                openedPersonContacts = contacts.filter { it.id == contact.id }.distinctBy { it.phone }
+
+                openedPersonContacts = contacts
+                    .filter { it.id == contact.id }
+                    .distinctBy { it.phone.replace("[\\D]".toRegex(), "") }
 
                 openedPersonContacts?.apply {
                     var haveDefaultButton = false
@@ -197,9 +200,9 @@ class CallsPluginReceiver : BroadcastReceiver() {
     private fun processMenuAction(context: Context, action: PluginAction) {
         if (action.selectedIds.isNotEmpty()) {
             when (action.selectedIds[0]) {
-                MENU_BUTTON_PHONE -> context.makeCall(openedCall?.number)
-                MENU_BUTTON_SMS -> context.openMessages(openedCall?.number)
-                MENU_BUTTON_INFO -> context.showContact(openedCall?.number)
+                MENU_BUTTON_PHONE -> context.makeCall(cn, openedCall?.number)
+                MENU_BUTTON_SMS -> context.openMessages(cn, openedCall?.number)
+                MENU_BUTTON_INFO -> context.showContact(cn, openedCall?.number)
             }
             openedCall = null
         }
@@ -233,9 +236,9 @@ class CallsPluginReceiver : BroadcastReceiver() {
 
             number?.let {
                 if (smsPressed) {
-                    context.openMessages(number)
+                    context.openMessages(cn, number)
                 } else if (callPressed) {
-                    context.makeCall(number)
+                    context.makeCall(cn, number)
                 }
             }
         }

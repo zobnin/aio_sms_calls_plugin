@@ -154,9 +154,9 @@ class SmsPluginReceiver : BroadcastReceiver() {
 
     private fun processDialogAction(context: Context, action: PluginAction) {
         if (action.selectedIds.contains(REPLY_BUTTON_ID)) {
-            context.openMessages(openedSms?.number)
+            context.openMessages(cn, openedSms?.number)
         } else if (action.selectedIds.contains(DIAL_BUTTON_ID)) {
-            context.makeCall(openedSms?.number)
+            context.makeCall(cn, openedSms?.number)
         }
         openedSms = null
     }
@@ -164,8 +164,8 @@ class SmsPluginReceiver : BroadcastReceiver() {
     private fun processMenuAction(context: Context, action: PluginAction) {
         if (action.selectedIds.isNotEmpty()) {
             when (action.selectedIds[0]) {
-                MENU_BUTTON_PHONE -> context.makeCall(openedSms?.number)
-                MENU_BUTTON_SMS -> context.openMessages(openedSms?.number)
+                MENU_BUTTON_PHONE -> context.makeCall(cn, openedSms?.number)
+                MENU_BUTTON_SMS -> context.openMessages(cn, openedSms?.number)
             }
             openedSms = null
         }
