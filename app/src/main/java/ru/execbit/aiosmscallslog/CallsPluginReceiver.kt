@@ -36,6 +36,10 @@ class CallsPluginReceiver : BroadcastReceiver() {
         CoroutineScope(Dispatchers.Default).launch {
             if (intent == null) return@launch
             if (!checkUid(intent)) return@launch
+            if (!checkAioVersion(context, App.REQUIRED_AIO_VERSION)) {
+                context.sendInvalidAioVersionError(cn!!)
+                return@launch
+            }
 
             when (intent.action) {
                 PluginIntentActions.PLUGIN_GET_DATA -> processGetData(context, intent)
@@ -78,13 +82,26 @@ class CallsPluginReceiver : BroadcastReceiver() {
                 return
             }
 
-            val contact = contacts.find { PhoneNumberUtils.compare(it.phone, call.number) }
-
+            /*
             if (!Settings.callsConfirmation) {
                 context.makeCall(cn, call.number)
                 return
             }
+            */
 
+            val contact = contacts.find { PhoneNumberUtils.compare(it.phone, call.number) }
+
+            context.sendPluginResult(
+                PluginResult(
+                    from = cn,
+                    data = PluginCallDialog(
+                        number = call.number,
+                        contactId = contact?.id ?: 0
+                    )
+                )
+            )
+
+            /*
             val radioButtons = if (contact != null) {
 
                 val radioButtons = mutableListOf<PluginRadioButton>()
@@ -117,7 +134,8 @@ class CallsPluginReceiver : BroadcastReceiver() {
 
                 radioButtons
             } else {
-                listOf(PluginRadioButton(text = call.number, id = 0))
+                // Only one checkbox for unknown numbers
+                listOf(PluginRadioButton(text = call.number, id = 0, checked = true))
             }
 
             val checkBoxes = listOf(
@@ -152,7 +170,7 @@ class CallsPluginReceiver : BroadcastReceiver() {
 
             context.sendPluginResult(result)
             openedCall = call
-
+             */
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -272,7 +290,8 @@ class CallsPluginReceiver : BroadcastReceiver() {
             val shownNames = mutableListOf<String>()
 
             var idx = 0
-            val nonRepeatingCalls = allCalls.distinctBy { it.number }
+            val nonRepeatingCalls = allCalls
+                .filterNot { it.number.isEmpty() }.distinctBy { it.number }
             val ids = generateIds(nonRepeatingCalls.size)
 
             nonRepeatingCalls.forEach { call ->

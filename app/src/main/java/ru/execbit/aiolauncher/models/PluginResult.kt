@@ -2,6 +2,7 @@ package ru.execbit.aiolauncher.models
 
 import android.content.ComponentName
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
@@ -25,6 +26,7 @@ class PluginResult(
     // * PluginMessage
     // * PluginError
     // * PendingIntent
+    // * PluginActivity
     val data: Parcelable? = null
 ): Parcelable
 
@@ -109,10 +111,18 @@ data class PluginCheckBox(
 ): Parcelable
 
 @Parcelize
+data class PluginCallDialog(
+    val number: String,
+    val contactId: Int
+): Parcelable
+
+@Parcelize
 data class PluginError(
     // 0 - ok
     // 1 - no permission
     // 2 - exception
+    // 4 - invalid action
+    // 5 - need to update AIO
     // >= 100 - other
     val errorCode: Int,
     val errorText: String
@@ -121,6 +131,14 @@ data class PluginError(
 @Parcelize
 data class PluginMessage(
     val text: String
+): Parcelable
+
+// This is just a hack for chinese phones that blocks PendingIntents
+@Parcelize
+data class PluginActivity(
+        val action: String,
+        val data: Uri? = null,
+        val component: ComponentName? = null
 ): Parcelable
 
 // From launcher to plugin

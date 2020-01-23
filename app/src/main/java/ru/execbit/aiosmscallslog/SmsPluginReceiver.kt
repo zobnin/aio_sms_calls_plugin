@@ -31,20 +31,15 @@ class SmsPluginReceiver : BroadcastReceiver() {
 
         CoroutineScope(Dispatchers.Default).launch {
             if (intent == null) return@launch
+            if (!checkUid(intent)) return@launch
+            if (!checkAioVersion(context, App.REQUIRED_AIO_VERSION)) {
+                context.sendInvalidAioVersionError(cn!!)
+                return@launch
+            }
 
             when (intent.action) {
-                PluginIntentActions.PLUGIN_GET_DATA -> {
-                    if (checkUid(intent)) {
-                        processGetData(context, intent)
-                    }
-                }
-
-                PluginIntentActions.PLUGIN_SEND_ACTION -> {
-                    if (checkUid(intent)) {
-                        processAction(context, intent)
-                    }
-                }
-
+                PluginIntentActions.PLUGIN_GET_DATA -> processGetData(context, intent)
+                PluginIntentActions.PLUGIN_SEND_ACTION -> processAction(context, intent)
                 Telephony.Sms.Intents.SMS_RECEIVED_ACTION -> processSmsReceived(context, intent)
             }
 
@@ -77,7 +72,7 @@ class SmsPluginReceiver : BroadcastReceiver() {
 
     private fun processTapAction(context: Context, action: PluginAction) {
         try {
-            val sms= getSmsById(action.selectedIds[0])
+            val sms = getSmsById(action.selectedIds[0])
             if (sms == null) {
                 generateAndSendResult(context)
                 return
@@ -209,24 +204,21 @@ class SmsPluginReceiver : BroadcastReceiver() {
             smses = SMS.getSms(context, limit = Settings.smsNum.toInt())
             smses.forEachIndexed { idx, sms ->
                 val line = PluginLine(
-                    body = sms.body.take(140),
+                    body = truncateSms(sms.body),
                     from = if (sms.name.isNotEmpty()) sms.name else sms.number,
                     id = ids[idx]
                 )
                 lines.add(line)
             }
 
-            val resultLines = if (lines.size < Settings.smsNum.toInt()) {
-                lines
-            } else {
-                lines.subList(0, Settings.smsNum.toInt())
-            }
-
             Settings.smsIds = idsToString(ids)
 
             return PluginResult(
                 from = cn,
-                data = PluginLines(resultLines, privateModeSupport = true)
+                data = PluginLines(
+                    lines = lines.take(Settings.smsNum.toInt()),
+                    privateModeSupport = true
+                )
             )
 
         } catch (e: Exception) {
@@ -253,6 +245,14 @@ class SmsPluginReceiver : BroadcastReceiver() {
         } catch (e: Exception) {
             e.printStackTrace()
             return null
+        }
+    }
+
+    private fun truncateSms(content: String): String {
+        return if (content.length > 140) {
+            content.take(140) + "…"
+        } else {
+            content
         }
     }
 

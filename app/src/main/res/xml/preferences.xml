@@ -20,12 +20,15 @@
             android:entryValues="@array/truncate_methods_values"
     />
 
+    <!--
     <CheckBoxPreference
             android:key="calls_confirmation"
             android:title="@string/calls_confirmation"
             android:summary="@string/calls_confirmation_summary"
             android:defaultValue="true"
     />
+    -->
+
     <CheckBoxPreference
             android:key="calls_show_unknown"
             android:title="@string/calls_show_unknown"

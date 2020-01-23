@@ -10,13 +10,19 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.provider.ContactsContract
+import ru.execbit.aiolauncher.models.PluginActivity
 import ru.execbit.aiolauncher.models.PluginResult
 import ru.execbit.aiolauncher.plugin.sendPluginResult
 
-// We can't start activity from background on Android 10
+// UPD 1: We can't start activity from background on Android 10
 // Instead we send pending intent to the launcher
 
-fun Context.openMessages(cn: ComponentName?, number: String?) {
+// UPD 2: Chinese crap phones can block pending intents
+// So we need to use hack: custom "pending intent" (PluginActivity)
+// Previous implementation marked as Old
+// Requires AIO version: 2.7.30
+
+fun Context.openMessagesOld(cn: ComponentName?, number: String?) {
     if (number == null) return
 
     try {
@@ -29,7 +35,20 @@ fun Context.openMessages(cn: ComponentName?, number: String?) {
     }
 }
 
-fun Context.makeCall(cn: ComponentName?, number: String?) {
+fun Context.openMessages(cn: ComponentName?, number: String?) {
+    if (number == null) return
+
+    val result = PluginResult(
+        from = cn,
+        data = PluginActivity(
+            action = Intent.ACTION_VIEW,
+            data = Uri.parse("sms:$number")
+        )
+    )
+    sendPluginResult(result)
+}
+
+fun Context.makeCallOld(cn: ComponentName?, number: String?) {
     if (number == null) return
 
     // Correctly handle # symbol
@@ -48,7 +67,27 @@ fun Context.makeCall(cn: ComponentName?, number: String?) {
     }
 }
 
-fun Context.showContact(cn: ComponentName?, number: String?) {
+fun Context.makeCall(cn: ComponentName?, number: String?) {
+    if (number == null) return
+
+    // Correctly handle # symbol
+    val fixedNumber = if (number.contains("#")) {
+        number.replace("#", "%23")
+    } else {
+        number
+    }
+
+    val result = PluginResult(
+        from = cn,
+        data = PluginActivity(
+            action = Intent.ACTION_CALL,
+            data = Uri.parse("tel:$fixedNumber")
+        )
+    )
+    sendPluginResult(result)
+}
+
+fun Context.showContactOld(cn: ComponentName?, number: String?) {
     try {
         val i = Intent().apply {
             action = ContactsContract.Intents.SHOW_OR_CREATE_CONTACT
@@ -59,6 +98,17 @@ fun Context.showContact(cn: ComponentName?, number: String?) {
     } catch (e: Exception) {
         e.printStackTrace()
     }
+}
+
+fun Context.showContact(cn: ComponentName?, number: String?) {
+    val result = PluginResult(
+        from = cn,
+        data = PluginActivity(
+            action = ContactsContract.Intents.SHOW_OR_CREATE_CONTACT,
+            data = Uri.fromParts("tel", number, null)
+        )
+    )
+    sendPluginResult(result)
 }
 
 private fun Context.sendPendingIntentResult(cn: ComponentName?, i: Intent) {

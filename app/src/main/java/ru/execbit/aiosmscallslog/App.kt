@@ -6,6 +6,7 @@ import com.mohamadamin.kpreferences.base.KPreferenceManager
 
 class App: Application() {
     companion object {
+        const val REQUIRED_AIO_VERSION = "2.7.30-beta8"
         var PACKAGE_NAME: String? = null
     }
 
