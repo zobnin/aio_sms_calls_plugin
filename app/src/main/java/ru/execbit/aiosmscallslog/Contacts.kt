@@ -12,23 +12,26 @@ import ru.execbit.aiolauncher.models.Contact
 @SuppressLint("MissingPermission")
 object Contacts {
     fun getCalls(context: Context): List<Call> {
-        val cursor = context.contentResolver.query(CallLog.Calls.CONTENT_URI, null, null, null, null)
-
         val calls = ArrayList<Call>()
 
-        cursor?.let {
-            val numberIdx = cursor.getColumnIndex(CallLog.Calls.NUMBER)
-            val nameIdx = cursor.getColumnIndex(CallLog.Calls.CACHED_NAME)
-            val typeIdx = cursor.getColumnIndex(CallLog.Calls.TYPE)
-            val dateIdx = cursor.getColumnIndex(CallLog.Calls.DATE)
+        val cursor = context.contentResolver.query(
+            CallLog.Calls.CONTENT_URI,
+            null,
+            null,
+            null,
+            null
+        )
 
+        cursor?.use {
             while (cursor.moveToNext()) {
-                val callType = cursor.getString(typeIdx)
-                val dirCode = callType.toInt()
+                val number = cursor.getString(cursor.getColumnIndex(CallLog.Calls.NUMBER))
+                val name = cursor.getString(cursor.getColumnIndex(CallLog.Calls.CACHED_NAME))
+                val type = cursor.getInt(cursor.getColumnIndex(CallLog.Calls.TYPE))
+                val date = cursor.getLong(cursor.getColumnIndex(CallLog.Calls.DATE))
 
-                val direction: String
+                if (number == null) continue
 
-                direction = when (dirCode) {
+                val direction = when (type) {
                     CallLog.Calls.OUTGOING_TYPE -> "outgoing"
                     CallLog.Calls.INCOMING_TYPE -> "incoming"
                     CallLog.Calls.MISSED_TYPE -> "missed"
@@ -36,14 +39,13 @@ object Contacts {
                 }
 
                 val call = Call(
-                        number = cursor.getString(numberIdx),
-                        cachedName = cursor.getString(nameIdx),
-                        date = cursor.getString(dateIdx).toLong(),
-                        direction = direction
+                    number = number,
+                    cachedName = name ?: "",
+                    date = date,
+                    direction = direction
                 )
                 calls.add(call)
             }
-            cursor.close()
         }
 
         // Some phones return calls in reversed order
@@ -53,27 +55,34 @@ object Contacts {
     fun getContacts(context: Context): List<Contact> {
         val contacts = ArrayList<Contact>()
 
-        val phones = context.contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null)
-        while (phones.moveToNext()) {
-            val contactId = phones.getInt(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID))
-            val contactName = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
-            val contactNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
-            val isPrimary = phones.getInt(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.IS_SUPER_PRIMARY))
+        val cursor = context.contentResolver.query(
+            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+            null,
+            null,
+            null,
+            null
+        )
 
-            // Meizu can have many duplicated numbers with commas
-            if (contactNumber.contains(',')) {
-                continue
+        cursor?.use {
+            while (cursor.moveToNext()) {
+                val contactId = cursor.getInt(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID))
+                val contactName = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
+                val contactNumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
+                val isPrimary = cursor.getInt(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.IS_SUPER_PRIMARY))
+
+                if (contactName == null || contactNumber == null) continue
+                // Meizu can have many duplicated numbers with commas
+                if (contactNumber.contains(',')) continue
+
+                val contact = Contact(contactName, contactId, contactNumber)
+
+                if (isPrimary > 0) {
+                    contact.default = true
+                }
+
+                contacts.add(contact)
             }
-
-            val contact = Contact(contactName, contactId, contactNumber)
-
-            if (isPrimary > 0) {
-                contact.default = true
-            }
-
-            contacts.add(contact)
         }
-        phones.close()
 
         return contacts
     }
@@ -82,7 +91,7 @@ object Contacts {
         val cr = context.contentResolver
         val uri = Uri.withAppendedPath(PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNumber))
         val cursor = cr.query(uri, arrayOf(PhoneLookup.DISPLAY_NAME), null, null, null)
-                ?: return ""
+            ?: return ""
         var contactName = ""
 
         if (cursor.moveToFirst()) {
