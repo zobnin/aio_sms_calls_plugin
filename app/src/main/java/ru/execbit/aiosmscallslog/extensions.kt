@@ -1,6 +1,5 @@
 package ru.execbit.aiosmscallslog
 
-import android.app.PendingIntent
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -19,21 +18,7 @@ import ru.execbit.aiolauncher.plugin.sendPluginResult
 
 // UPD 2: Chinese crap phones can block pending intents
 // So we need to use hack: custom "pending intent" (PluginActivity)
-// Previous implementation marked as Old
 // Requires AIO version: 2.7.30
-
-fun Context.openMessagesOld(cn: ComponentName?, number: String?) {
-    if (number == null) return
-
-    try {
-        val i = Intent(Intent.ACTION_VIEW)
-        i.data = Uri.parse("sms:$number")
-        i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        sendPendingIntentResult(cn, i)
-    } catch (e: Exception) {
-        e.printStackTrace()
-    }
-}
 
 fun Context.openMessages(cn: ComponentName?, number: String?) {
     if (number == null) return
@@ -46,25 +31,6 @@ fun Context.openMessages(cn: ComponentName?, number: String?) {
         )
     )
     sendPluginResult(result)
-}
-
-fun Context.makeCallOld(cn: ComponentName?, number: String?) {
-    if (number == null) return
-
-    // Correctly handle # symbol
-    val fixedNumber = if (number.contains("#")) {
-        number.replace("#", "%23")
-    } else {
-        number
-    }
-
-    try {
-        val i = Intent(Intent.ACTION_CALL, Uri.parse("tel:$fixedNumber"))
-        i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        sendPendingIntentResult(cn, i)
-    } catch (e: Exception) {
-        e.printStackTrace()
-    }
 }
 
 fun Context.makeCall(cn: ComponentName?, number: String?) {
@@ -87,19 +53,6 @@ fun Context.makeCall(cn: ComponentName?, number: String?) {
     sendPluginResult(result)
 }
 
-fun Context.showContactOld(cn: ComponentName?, number: String?) {
-    try {
-        val i = Intent().apply {
-            action = ContactsContract.Intents.SHOW_OR_CREATE_CONTACT
-            data = Uri.fromParts("tel", number, null)
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        }
-        sendPendingIntentResult(cn, i)
-    } catch (e: Exception) {
-        e.printStackTrace()
-    }
-}
-
 fun Context.showContact(cn: ComponentName?, number: String?) {
     val result = PluginResult(
         from = cn,
@@ -111,30 +64,56 @@ fun Context.showContact(cn: ComponentName?, number: String?) {
     sendPluginResult(result)
 }
 
-private fun Context.sendPendingIntentResult(cn: ComponentName?, i: Intent) {
-    val pi = PendingIntent.getActivity(this, 1, i, PendingIntent.FLAG_UPDATE_CURRENT)
-    val result = PluginResult(
-        from = cn,
-        data = pi
-    )
-    sendPluginResult(result)
-}
-
 fun Drawable.toBitmap(): Bitmap? {
     if (this is BitmapDrawable) {
-        if (this.bitmap != null) {
-            return this.bitmap
-        }
+        return this.bitmap
     }
 
-    val bitmap: Bitmap? = Bitmap.createBitmap(
+    val bitmap = Bitmap.createBitmap(
         intrinsicWidth,
         intrinsicHeight,
         Bitmap.Config.ARGB_8888
     )
 
-    val canvas = Canvas(bitmap)
-    setBounds(0, 0, canvas.width, canvas.height)
-    draw(canvas)
+    bitmap?.let {
+        val canvas = Canvas(bitmap)
+        setBounds(0, 0, canvas.width, canvas.height)
+        draw(canvas)
+    }
+
     return bitmap
 }
+
+fun String.getTruncatedName(): String {
+    return when (Settings.callsTruncateMethod) {
+        "by_symbols" -> truncateBySymbols()
+        "by_last_name" -> truncateByLastName()
+        else -> this
+    }
+}
+
+private fun String.truncateByLastName(): String {
+    return if (this.trim().contains(' ')) {
+        val nameList = this.split(' ')
+        val firstName = nameList[0]
+
+        val lastName = if (nameList[1].length > 1) {
+            nameList[1].take(1) + '.'
+        } else {
+            nameList[1]
+        }
+
+        "$firstName $lastName"
+    } else {
+        truncateBySymbols()
+    }
+}
+
+private fun String.truncateBySymbols(): String {
+    return if (length > 10) {
+        take(9) + '.'
+    } else {
+        this
+    }
+}
+

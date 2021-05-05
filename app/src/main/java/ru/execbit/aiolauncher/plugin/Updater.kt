@@ -6,6 +6,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.core.app.NotificationCompat
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
@@ -61,7 +62,7 @@ object Updater {
                 .retryOnConnectionFailure(false)
                 .build()
 
-            okHttpClient.newCall(request).execute().body()?.let {
+            okHttpClient.newCall(request).execute().body?.let {
                 return parseJson(it.string())
             }
 
@@ -82,11 +83,12 @@ object Updater {
         val pendingIntent
                 = PendingIntent.getActivity(context, 0, browserIntent, 0)
 
-        val notification = Notification.Builder(context)
+        val notification = NotificationCompat.Builder(context)
             .setContentTitle(context.getString(R.string.new_version_available, meta.version))
             .setContentText(context.getString(R.string.click_to_download))
             .setSmallIcon(R.drawable.ic_cloud_download_black_24dp)
             .setContentIntent(pendingIntent)
+            .setChannelId("main")
             .setAutoCancel(true)
             .build()
 

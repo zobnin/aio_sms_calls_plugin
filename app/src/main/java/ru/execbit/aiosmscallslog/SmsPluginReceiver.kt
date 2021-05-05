@@ -55,19 +55,21 @@ class SmsPluginReceiver : BroadcastReceiver() {
                     "longtap" -> processLongTapAction(context, action)
                     "menu" -> processMenuAction(context, action)
                     "dialog" -> processDialogAction(context, action)
-                    else -> {
-                        val result = PluginResult(
-                            from = cn,
-                            data = PluginError(4, context.getString(R.string.invalid_action))
-                        )
-                        context.sendPluginResult(result)
-                    }
+                    else -> sendError(context)
                 }
 
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
+    }
+
+    private fun sendError(context: Context) {
+        val result = PluginResult(
+            from = cn,
+            data = PluginError(4, context.getString(R.string.invalid_action))
+        )
+        context.sendPluginResult(result)
     }
 
     private fun processTapAction(context: Context, action: PluginAction) {
@@ -124,12 +126,12 @@ class SmsPluginReceiver : BroadcastReceiver() {
             val menu = listOf(
                 PluginButton(
                     text = "Phone",
-                    icon = context.getDrawable(R.drawable.ic_phone).toBitmap(),
+                    icon = context.getDrawable(R.drawable.ic_phone)?.toBitmap(),
                     id = MENU_BUTTON_PHONE
                 ),
                 PluginButton(
                     text = "SMS",
-                    icon = context.getDrawable(R.drawable.ic_sms).toBitmap(),
+                    icon = context.getDrawable(R.drawable.ic_sms)?.toBitmap(),
                     id = MENU_BUTTON_SMS
                 )
             )
@@ -148,10 +150,13 @@ class SmsPluginReceiver : BroadcastReceiver() {
     }
 
     private fun processDialogAction(context: Context, action: PluginAction) {
-        if (action.selectedIds.contains(REPLY_BUTTON_ID)) {
-            context.openMessages(cn, openedSms?.number)
-        } else if (action.selectedIds.contains(DIAL_BUTTON_ID)) {
-            context.makeCall(cn, openedSms?.number)
+        when {
+            action.selectedIds.contains(REPLY_BUTTON_ID) -> {
+                context.openMessages(cn, openedSms?.number)
+            }
+            action.selectedIds.contains(DIAL_BUTTON_ID) -> {
+                context.makeCall(cn, openedSms?.number)
+            }
         }
         openedSms = null
     }
@@ -171,22 +176,27 @@ class SmsPluginReceiver : BroadcastReceiver() {
             when (event) {
                 // Called when plugin loaded
                 "load" -> generateAndSendResult(context)
+
                 // Called on force reload (by user)
                 "force" -> generateAndSendResult(context)
-                // Called on alarm (1 hour by default)
+
+                // Called on alarm (30 minutes by default)
                 //"alarm" -> {}
+
                 // Called on launcher resume (user pressed home button and returned to desktop)
-                "resume" -> {
-                    // SMS loading is very expensive operation so we do not load it on resume
-                    // But Android can unload plugin from memory in any moment
-                    // We need to reinitialize it
-                    if (Settings.smsUpdateOnResume || Settings.smsSettingsChanged || !initDone) {
-                        generateAndSendResult(context)
-                        if (Settings.smsSettingsChanged) {
-                            Settings.smsSettingsChanged = false
-                        }
-                    }
-                }
+                "resume" -> onResume(context)
+            }
+        }
+    }
+
+    // SMS loading is very expensive operation so we do not load it on resume
+    // But Android can unload plugin from memory at any moment
+    // We need to reinitialize it
+    private fun onResume(context: Context) {
+        if (Settings.smsUpdateOnResume || Settings.smsSettingsChanged || !initDone) {
+            generateAndSendResult(context)
+            if (Settings.smsSettingsChanged) {
+                Settings.smsSettingsChanged = false
             }
         }
     }
@@ -216,7 +226,7 @@ class SmsPluginReceiver : BroadcastReceiver() {
             return PluginResult(
                 from = cn,
                 data = PluginLines(
-                    lines = lines.take(Settings.smsNum.toInt()),
+                    lines = lines,
                     privateModeSupport = true
                 )
             )
@@ -257,7 +267,9 @@ class SmsPluginReceiver : BroadcastReceiver() {
     }
 
     private suspend fun processSmsReceived(context: Context, intent: Intent) {
-        // Wait for DB update
+        // Wait for system SMS DB update
+        // This is bad design
+        // We should use an observer to monitor the database
         delay(10000)
         generateAndSendResult(context)
     }

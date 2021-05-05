@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools" package="ru.execbit.aiosmscallslog">
+        xmlns:tools="http://schemas.android.com/tools"
+        package="ru.execbit.aiosmscallslog">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
@@ -8,25 +9,33 @@
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+
+    <queries>
+        <package android:name="ru.execbit.aiolauncher" />
+    </queries>
 
     <application
             android:name=".App"
             android:allowBackup="false"
-            tools:replace="android:allowBackup"
             android:icon="@mipmap/ic_launcher"
             android:label="@string/app_name"
-            android:supportsRtl="true"
             android:launchMode="singleTask"
-            tools:ignore="GoogleAppIndexingWarning">
-        <meta-data android:name="android.max_aspect" android:value="2.1" />
-        <activity android:name=".MainActivity">
+            android:supportsRtl="true"
+            tools:ignore="GoogleAppIndexingWarning"
+            tools:replace="android:allowBackup">
+
+        <activity
+                android:name=".MainActivity"
+                android:theme="@android:style/Theme.DeviceDefault.DayNight"
+                tools:ignore="NewApi">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
-                <action android:name="ru.execbit.aiolauncher.PLUGIN_SETTINGS"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="ru.execbit.aiolauncher.PLUGIN_SETTINGS" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 
@@ -34,13 +43,13 @@
                 android:name=".SmsPluginReceiver"
                 android:label="@string/last_sms">
             <intent-filter>
-                <action android:name="ru.execbit.aiolauncher.PLUGIN_GET_DATA"/>
+                <action android:name="ru.execbit.aiolauncher.PLUGIN_GET_DATA" />
             </intent-filter>
             <intent-filter>
-                <action android:name="ru.execbit.aiolauncher.PLUGIN_SEND_ACTION"/>
+                <action android:name="ru.execbit.aiolauncher.PLUGIN_SEND_ACTION" />
             </intent-filter>
             <intent-filter android:priority="100">
-                <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
 
@@ -48,10 +57,10 @@
                 android:name=".CallsPluginReceiver"
                 android:label="@string/calls">
             <intent-filter>
-                <action android:name="ru.execbit.aiolauncher.PLUGIN_GET_DATA"/>
+                <action android:name="ru.execbit.aiolauncher.PLUGIN_GET_DATA" />
             </intent-filter>
             <intent-filter>
-                <action android:name="ru.execbit.aiolauncher.PLUGIN_SEND_ACTION"/>
+                <action android:name="ru.execbit.aiolauncher.PLUGIN_SEND_ACTION" />
             </intent-filter>
         </receiver>
     </application>

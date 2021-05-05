@@ -14,10 +14,6 @@ import ru.execbit.aiolauncher.plugin.*
 
 class CallsPluginReceiver : BroadcastReceiver() {
     companion object {
-        const val DIAL_BUTTON_ID = -1000
-        const val SMS_BUTTON_ID = -1001
-        const val DONT_SHOW_AGAIN_ID = -1002
-
         const val MENU_BUTTON_PHONE = -0
         const val MENU_BUTTON_SMS = -1
         const val MENU_BUTTON_INFO = -2
@@ -27,7 +23,6 @@ class CallsPluginReceiver : BroadcastReceiver() {
         private var cn: ComponentName? = null
         private var calls = emptyList<Call>()
         private var openedCall: Call? = null
-        private var openedPersonContacts: List<Contact>? = null
     }
 
     override fun onReceive(context: Context, intent: Intent?) {
@@ -57,19 +52,20 @@ class CallsPluginReceiver : BroadcastReceiver() {
                     "tap" -> processTapAction(context, action)
                     "longtap" -> processLongTapAction(context, action)
                     "menu" -> processMenuAction(context, action)
-                    "dialog" -> processDialogAction(context, action)
-                    else -> {
-                        val result = PluginResult(
-                            from = cn,
-                            data = PluginError(4, context.getString(R.string.invalid_action))
-                        )
-                        context.sendPluginResult(result)
-                    }
+                    else -> sendError(context)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
+    }
+
+    private fun sendError(context: Context) {
+        val result = PluginResult(
+            from = cn,
+            data = PluginError(4, context.getString(R.string.invalid_action))
+        )
+        context.sendPluginResult(result)
     }
 
     private fun processTapAction(context: Context, action: PluginAction) {
@@ -82,14 +78,9 @@ class CallsPluginReceiver : BroadcastReceiver() {
                 return
             }
 
-            /*
-            if (!Settings.callsConfirmation) {
-                context.makeCall(cn, call.number)
-                return
+            val contact = contacts.find {
+                PhoneNumberUtils.compare(it.phone, call.number)
             }
-            */
-
-            val contact = contacts.find { PhoneNumberUtils.compare(it.phone, call.number) }
 
             context.sendPluginResult(
                 PluginResult(
@@ -100,77 +91,6 @@ class CallsPluginReceiver : BroadcastReceiver() {
                     )
                 )
             )
-
-            /*
-            val radioButtons = if (contact != null) {
-
-                val radioButtons = mutableListOf<PluginRadioButton>()
-
-                openedPersonContacts = contacts
-                    .filter { it.id == contact.id }
-                    .distinctBy { it.phone.replace("[\\D]".toRegex(), "") }
-
-                openedPersonContacts?.apply {
-                    var haveDefaultButton = false
-
-                    forEachIndexed { idx, it ->
-                        val isChecked = this.size == 1 || it.default
-                        haveDefaultButton = isChecked == true
-
-                        radioButtons.add(
-                            PluginRadioButton(
-                                text = it.phone,
-                                checked = isChecked,
-                                id = idx
-                            )
-                        )
-                    }
-
-                    // Not all phones mark default numbers
-                    if (!haveDefaultButton && size > 0) {
-                        radioButtons[0].checked = true
-                    }
-                }
-
-                radioButtons
-            } else {
-                // Only one checkbox for unknown numbers
-                listOf(PluginRadioButton(text = call.number, id = 0, checked = true))
-            }
-
-            val checkBoxes = listOf(
-                PluginCheckBox(
-                    text = context.getString(R.string.dont_ask_again),
-                    id = DONT_SHOW_AGAIN_ID
-                )
-            )
-
-            val buttons = listOf(
-                PluginButton(
-                    text = context.getString(R.string.call),
-                    id = DIAL_BUTTON_ID
-                ),
-                PluginButton(
-                    text = context.getString(R.string.sms),
-                    id = SMS_BUTTON_ID
-                )
-            )
-
-            val dialog = PluginDialog(
-                title = contact?.name ?: call.number,
-                radioButtons = radioButtons,
-                checkBoxes = checkBoxes,
-                bottomButtons = buttons
-            )
-
-            val result = PluginResult(
-                from = cn,
-                data = dialog
-            )
-
-            context.sendPluginResult(result)
-            openedCall = call
-             */
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -187,17 +107,17 @@ class CallsPluginReceiver : BroadcastReceiver() {
             val menu = listOf(
                 PluginButton(
                     text = "Phone",
-                    icon = context.getDrawable(R.drawable.ic_phone).toBitmap(),
+                    icon = context.getDrawable(R.drawable.ic_phone)?.toBitmap(),
                     id = MENU_BUTTON_PHONE
                 ),
                 PluginButton(
                     text = "SMS",
-                    icon = context.getDrawable(R.drawable.ic_sms).toBitmap(),
+                    icon = context.getDrawable(R.drawable.ic_sms)?.toBitmap(),
                     id = MENU_BUTTON_SMS
                 ),
                 PluginButton(
                     text = "Info",
-                    icon = context.getDrawable(R.drawable.ic_info).toBitmap(),
+                    icon = context.getDrawable(R.drawable.ic_info)?.toBitmap(),
                     id = MENU_BUTTON_INFO
                 )
             )
@@ -226,45 +146,6 @@ class CallsPluginReceiver : BroadcastReceiver() {
         }
     }
 
-    private fun processDialogAction(context: Context, action: PluginAction) {
-        var smsPressed = false
-        var callPressed = false
-        var dontShowChecked = false
-        var checkBoxSelected = -1
-
-        action.selectedIds.forEach {
-            when (it) {
-                SMS_BUTTON_ID -> smsPressed = true
-                DIAL_BUTTON_ID -> callPressed = true
-                DONT_SHOW_AGAIN_ID -> dontShowChecked = true
-                else -> checkBoxSelected = it
-            }
-        }
-
-        if (dontShowChecked) {
-            Settings.callsConfirmation = false
-        }
-
-        if (checkBoxSelected >= 0) {
-            val number = if (openedPersonContacts != null) {
-                openedPersonContacts!![checkBoxSelected].phone
-            } else {
-                openedCall?.number
-            }
-
-            number?.let {
-                if (smsPressed) {
-                    context.openMessages(cn, number)
-                } else if (callPressed) {
-                    context.makeCall(cn, number)
-                }
-            }
-        }
-
-        openedCall = null
-        openedPersonContacts = null
-    }
-
     private fun processGetData(context: Context, intent: Intent) {
         intent.getStringExtra("event")?.let { event ->
             when (event) {
@@ -280,9 +161,10 @@ class CallsPluginReceiver : BroadcastReceiver() {
         context.sendPluginResult(generateResult(context))
     }
 
+    // Scary long function, but I'm too lazy to fix it :)
     private fun generateResult(context: Context): PluginResult {
         try {
-            val allCalls = Contacts.getCalls(context)
+            val allCalls = Calls.getCalls(context)
             val filteredCalls = mutableListOf<Call>()
             val contacts = Contacts.getContacts(context)
             val buttons = mutableListOf<PluginButton>()
@@ -290,8 +172,12 @@ class CallsPluginReceiver : BroadcastReceiver() {
             val shownNames = mutableListOf<String>()
 
             var idx = 0
+            val maxIdx = Settings.callsNum.toInt() * 10
+
             val nonRepeatingCalls = allCalls
-                .filterNot { it.number.isEmpty() }.distinctBy { it.number }
+                .filterNot { it.number.isEmpty() }
+                .distinctBy { it.number }
+
             val ids = generateIds(nonRepeatingCalls.size)
 
             nonRepeatingCalls.forEach { call ->
@@ -316,7 +202,7 @@ class CallsPluginReceiver : BroadcastReceiver() {
                 }
 
                 val text = if (canTruncate) {
-                    getTruncatedName(name)
+                    name.getTruncatedName()
                 } else {
                     name
                 }
@@ -338,6 +224,10 @@ class CallsPluginReceiver : BroadcastReceiver() {
                 filteredCalls.add(call)
 
                 idx++
+
+                if (idx >= maxIdx) {
+                    return@forEach
+                }
             }
 
             calls = filteredCalls
@@ -360,40 +250,6 @@ class CallsPluginReceiver : BroadcastReceiver() {
                 data = PluginError(2, e.toString())
             )
         }
-    }
-
-    private fun getTruncatedName(fullName: String): String {
-        return when (Settings.callsTruncateMethod) {
-            "by_symbols" -> {
-                if (fullName.length > 10) {
-                    fullName.take(9) + '.'
-                } else {
-                    fullName
-                }
-            }
-
-            "by_last_name" -> {
-                if (fullName.trim().contains(' ')) {
-                    val nameList = fullName.split(' ')
-                    val firstName = nameList[0]
-                    val lastName = if (nameList[1].length > 1) {
-                        nameList[1].take(1) + '.'
-                    } else {
-                        nameList[1]
-                    }
-                    "$firstName $lastName"
-                } else {
-                    if (fullName.length > 10) {
-                        fullName.take(9) + '.'
-                    } else {
-                        fullName
-                    }
-                }
-            }
-
-            else -> fullName
-        }
-
     }
 
     private fun getCallById(id: Int): Call? {

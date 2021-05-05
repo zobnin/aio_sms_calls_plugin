@@ -18,7 +18,6 @@ object Settings {
 
     var lastPluginUpdateCheck by Preference(0L, "last_update_check")
     var notifyShowedForVersion by Preference(BuildConfig.VERSION_CODE, "notify_showed")
-    var showBatteryOptWarning by Preference(true, "show_battery_opt_warning")
 
     var pluginUid by Preference("", "plugin_uid")
 }
