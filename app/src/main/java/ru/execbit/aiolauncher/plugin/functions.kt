@@ -57,29 +57,3 @@ fun checkUid(intent: Intent): Boolean {
 
     return false
 }
-
-fun generateIds(num: Int): List<Int> {
-    val r = Random()
-    val uniqueNumbers = HashSet<Int>()
-
-    while (uniqueNumbers.size < num) {
-        // Generate only positive numbers
-        uniqueNumbers.add(r.nextInt(Integer.MAX_VALUE))
-    }
-
-    return uniqueNumbers.toList()
-}
-
-fun idsToString(ids: List<Int>): String {
-    var string = ""
-
-    ids.forEach {
-        string += "$it:"
-    }
-
-    return string.dropLast(1)
-}
-
-fun stringToIds(string: String): List<Int> {
-    return string.split(':').map { it.toInt() }
-}

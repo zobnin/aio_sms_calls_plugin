@@ -22,4 +22,10 @@
     <string name="by_symbols">Według symboli</string>
     <string name="by_last_name">Według nazwiska</string>
     <string name="none">Żaden</string>
+    <string name="by_first_name">Wg nazwy</string>
+    <string name="sms_show_read">Pokaż przeczytane SMS-y</string>
+    <string name="calls_show_only_missed">Tylko nieodebrane połączenia</string>
+    <string name="plugin_auto_hide">Automatycznie ukryj pustą wtyczkę</string>
+    <string name="sms_enable_search">Włącz wyszukiwanie SMS-ów</string>
+    <string name="calls_enable_search">Włącz wyszukiwanie połączeń</string>
 </resources>

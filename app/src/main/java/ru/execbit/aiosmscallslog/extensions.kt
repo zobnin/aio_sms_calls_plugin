@@ -9,9 +9,13 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.provider.ContactsContract
+import android.text.format.DateFormat
+import androidx.annotation.DrawableRes
+import androidx.appcompat.content.res.AppCompatResources
 import ru.execbit.aiolauncher.models.PluginActivity
 import ru.execbit.aiolauncher.models.PluginResult
 import ru.execbit.aiolauncher.plugin.sendPluginResult
+import java.text.SimpleDateFormat
 
 // UPD 1: We can't start activity from background on Android 10
 // Instead we send pending intent to the launcher
@@ -84,36 +88,62 @@ fun Drawable.toBitmap(): Bitmap? {
     return bitmap
 }
 
+fun Context.getCompatDrawable(@DrawableRes resId: Int): Drawable? {
+    return AppCompatResources.getDrawable(this, resId)
+}
+
+fun Long.toDateTimeString(): String {
+    val locale = App.context.resources.configuration.locale
+    val localizedDialogPattern = DateFormat.getBestDateTimePattern(locale, "dd MMM yyyy HH:mm")
+    val dialogDateFormatter = SimpleDateFormat(localizedDialogPattern, locale)
+
+    return dialogDateFormatter.format(this)
+}
+
 fun String.getTruncatedName(): String {
     return when (Settings.callsTruncateMethod) {
         "by_symbols" -> truncateBySymbols()
-        "by_last_name" -> truncateByLastName()
+        "by_first_name" -> truncateByName(Settings.callsTruncateMethod)
+        "by_last_name" -> truncateByName(Settings.callsTruncateMethod)
         else -> this
     }
 }
 
-private fun String.truncateByLastName(): String {
+private fun String.truncateByName(how: String): String {
     return if (this.trim().contains(' ')) {
         val nameList = this.split(' ')
-        val firstName = nameList[0]
 
-        val lastName = if (nameList[1].length > 1) {
-            nameList[1].take(1) + '.'
+        if (how == "by_first_name") {
+            val firstNameL = truncateName(nameList[0])
+            val lastName = nameList[1]
+            "$firstNameL $lastName"
         } else {
-            nameList[1]
+            val firstName = nameList[0]
+            val lastNameL = truncateName(nameList[1])
+            "$firstName $lastNameL"
         }
-
-        "$firstName $lastName"
     } else {
         truncateBySymbols()
     }
 }
 
 private fun String.truncateBySymbols(): String {
-    return if (length > 10) {
-        take(9) + '.'
-    } else {
-        this
+    return when {
+        length > 10 -> take(9) + '.'
+        else -> this
     }
 }
 
+private fun truncateName(name: String): String {
+    return when {
+        name.length > 1 -> name.take(1) + '.'
+        else -> name
+    }
+}
+
+fun getComponentName(className: String): ComponentName {
+    val packageName = App.context.packageName
+    val clazz = "$packageName.$className"
+
+    return ComponentName(packageName, clazz)
+}

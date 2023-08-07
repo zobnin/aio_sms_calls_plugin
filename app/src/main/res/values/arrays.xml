@@ -1,5 +1,4 @@
 <resources>
-
     <string-array name="linesArray" translatable="false">
         <item>1</item>
         <item>2</item>
@@ -28,12 +27,14 @@
 
     <string-array name="truncate_methods">
         <item>@string/by_symbols</item>
+        <item>@string/by_first_name</item>
         <item>@string/by_last_name</item>
         <item>@string/none</item>
     </string-array>
 
     <string-array name="truncate_methods_values" translatable="false">
         <item>by_symbols</item>
+        <item>by_first_name</item>
         <item>by_last_name</item>
         <item>none</item>
     </string-array>

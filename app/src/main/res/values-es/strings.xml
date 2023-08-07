@@ -22,4 +22,10 @@
     <string name="by_symbols">Por simbolos</string>
     <string name="by_last_name">Por apellido</string>
     <string name="none">Ninguna</string>
+    <string name="by_first_name">Por nombre</string>
+    <string name="sms_show_read">Mostrar SMS leídos</string>
+    <string name="calls_show_only_missed">Solo llamadas perdidas</string>
+    <string name="plugin_auto_hide">Ocultar automáticamente el complemento vacío</string>
+    <string name="sms_enable_search">Habilitar la búsqueda de SMS</string>
+    <string name="calls_enable_search">Habilitar búsqueda de llamadas</string>
 </resources>

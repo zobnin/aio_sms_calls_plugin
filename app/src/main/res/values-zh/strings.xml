@@ -22,4 +22,10 @@
     <string name="by_symbols">按符号</string>
     <string name="by_last_name">按姓氏</string>
     <string name="none">没有</string>
+    <string name="by_first_name">按名字</string>
+    <string name="sms_show_read">显示已读短信</string>
+    <string name="calls_show_only_missed">只有未接来电</string>
+    <string name="plugin_auto_hide">自动隐藏空插件</string>
+    <string name="sms_enable_search">启用短信搜索</string>
+    <string name="calls_enable_search">启用来电搜索</string>
 </resources>

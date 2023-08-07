@@ -22,4 +22,10 @@
     <string name="by_symbols">По символам</string>
     <string name="by_last_name">По фамилии</string>
     <string name="none">Никак</string>
+    <string name="by_first_name">По имени</string>
+    <string name="sms_show_read">Показывать прочитанные СМС</string>
+    <string name="calls_show_only_missed">Только пропущенные звонки</string>
+    <string name="plugin_auto_hide">Автоматически скрывать пустой плагин</string>
+    <string name="sms_enable_search">Включить поиск по СМС</string>
+    <string name="calls_enable_search">Включить поиск звонков</string>
 </resources>

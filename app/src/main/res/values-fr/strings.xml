@@ -22,4 +22,10 @@
     <string name="by_symbols">Par des symboles</string>
     <string name="by_last_name">Par nom</string>
     <string name="none">Aucun</string>
+    <string name="by_first_name">De nom</string>
+    <string name="sms_show_read">Afficher les SMS lus</string>
+    <string name="calls_show_only_missed">Seuls les appels manqués</string>
+    <string name="plugin_auto_hide">Masquer automatiquement le plugin vide</string>
+    <string name="sms_enable_search">Activer la recherche par SMS</string>
+    <string name="calls_enable_search">Activer la recherche d\'appels</string>
 </resources>

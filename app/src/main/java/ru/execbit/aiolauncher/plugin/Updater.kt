@@ -1,6 +1,5 @@
 package ru.execbit.aiolauncher.plugin
 
-import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
@@ -22,9 +21,9 @@ object Updater {
         val versionCode: Int
     )
 
-    private const val REPO_HOST = "https://execbit.ru/aiolauncher/"
-    private val PKG_URL = REPO_HOST + App.PACKAGE_NAME + ".apk"
-    private val META_URL = REPO_HOST + App.PACKAGE_NAME + ".meta"
+    private const val REPO_URL = "https://aiolauncher.app/scripts/"
+    private val PKG_URL = REPO_URL + App.context.packageName + ".apk"
+    private val META_URL = REPO_URL + App.context.packageName + ".meta"
 
     fun checkForNewVersionAndShowNotify(context: Context) {
         val time = Date().time
@@ -80,8 +79,8 @@ object Updater {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
         }
 
-        val pendingIntent
-                = PendingIntent.getActivity(context, 0, browserIntent, 0)
+        val pendingIntent = PendingIntent.getActivity(
+            context, 0, browserIntent, PendingIntent.FLAG_IMMUTABLE)
 
         val notification = NotificationCompat.Builder(context)
             .setContentTitle(context.getString(R.string.new_version_available, meta.version))

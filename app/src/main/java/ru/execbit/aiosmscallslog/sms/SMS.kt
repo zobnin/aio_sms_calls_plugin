@@ -1,8 +1,9 @@
-package ru.execbit.aiosmscallslog
+package ru.execbit.aiosmscallslog.sms
 
 import android.content.Context
 import android.net.Uri
 import ru.execbit.aiolauncher.models.Sms
+import ru.execbit.aiosmscallslog.calls.Contacts
 
 object SMS {
     fun getSms(context: Context, limit: Int = 10): MutableList<Sms> {
@@ -10,35 +11,24 @@ object SMS {
         var num = 0
 
         val cursor = context.contentResolver.query(
-            Uri.parse("content://sms/inbox"),
-            null,
-            null,
-            null,
-            null
+            Uri.parse("content://sms/inbox"), null, null, null, null
         )
 
         cursor?.use {
             if (cursor.moveToFirst()) { // must check the result to prevent exception
                 do {
-                    var address = ""
-                    var date = ""
-                    var body = ""
+                    var sms = Sms()
 
                     for (idx in 0 until cursor.columnCount) {
                         when (cursor.getColumnName(idx)) {
-                            "address" -> address = cursor.getString(idx)
-                            "date" -> date = cursor.getString(idx)
-                            "body" -> body = cursor.getString(idx)
+                            "address" -> sms = sms.copy(number = cursor.getString(idx))
+                            "date" -> sms = sms.copy(date = cursor.getString(idx).toLong())
+                            "body" -> sms = sms.copy(body = cursor.getString(idx))
+                            "read" -> sms = sms.copy(isRead = cursor.getInt(idx) == 1)
                         }
                     }
 
-                    val sms = Sms(
-                        number = address,
-                        name = Contacts.getContactName(context, address),
-                        date = date.toLong(),
-                        body = body
-                    )
-
+                    sms = sms.copy(name = Contacts.getContactName(context, sms.number))
                     items.add(sms)
                     num++
 

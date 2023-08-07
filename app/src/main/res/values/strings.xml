@@ -23,4 +23,10 @@
     <string name="by_symbols">By symbols</string>
     <string name="by_last_name">By last name</string>
     <string name="none">None</string>
+    <string name="by_first_name">By name</string>
+    <string name="sms_show_read">Show read SMS</string>
+    <string name="calls_show_only_missed">Only missed calls</string>
+    <string name="plugin_auto_hide">Automatically hide empty plugin</string>
+    <string name="sms_enable_search">Enable SMS search</string>
+    <string name="calls_enable_search">Enable calls search</string>
 </resources>

@@ -1,4 +1,4 @@
-package ru.execbit.aiosmscallslog
+package ru.execbit.aiosmscallslog.calls
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -13,11 +13,7 @@ object Contacts {
         val contacts = ArrayList<Contact>()
 
         val cursor = context.contentResolver.query(
-            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-            null,
-            null,
-            null,
-            null
+            ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null
         )
 
         cursor?.use {

@@ -1,57 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory
-            android:title="@string/calls">
-    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/calls" />
 
     <ListPreference
             android:key="calls_num"
             android:defaultValue="3"
             android:entries="@array/linesArray"
             android:entryValues="@array/linesValues"
-            android:title="@string/number_of_lines"/>
-    />
+            android:title="@string/number_of_lines" />
 
     <ListPreference
-            android:key="calls_truncate_method"
-            android:title="@string/calls_truncate"
             android:defaultValue="by_last_name"
             android:entries="@array/truncate_methods"
             android:entryValues="@array/truncate_methods_values"
-    />
-
-    <!--
-    <CheckBoxPreference
-            android:key="calls_confirmation"
-            android:title="@string/calls_confirmation"
-            android:summary="@string/calls_confirmation_summary"
-            android:defaultValue="true"
-    />
-    -->
+            android:key="calls_truncate_method"
+            android:title="@string/calls_truncate" />
 
     <CheckBoxPreference
             android:key="calls_show_unknown"
-            android:title="@string/calls_show_unknown"
-            android:summary="@string/calls_show_unknown"
             android:defaultValue="false"
-    />
-
-    <PreferenceCategory
-            android:title="@string/last_sms">
-    </PreferenceCategory>
-
-    <ListPreference
-            android:key="sms_num"
-            android:title="@string/number_of_lines"
-            android:defaultValue="3"
-            android:entries="@array/linesArray"
-            android:entryValues="@array/linesValues"/>
+            android:summary="@string/calls_show_unknown"
+            android:title="@string/calls_show_unknown" />
 
     <CheckBoxPreference
-            android:key="sms_update_on_resume"
-            android:title="@string/update_on_resume"
-            android:summary="@string/update_on_resume_summary"
+            android:key="calls_show_only_missed"
             android:defaultValue="false"
-    />
+            android:summary="@string/calls_show_only_missed"
+            android:title="@string/calls_show_only_missed" />
+
+    <CheckBoxPreference
+            android:key="calls_auto_hide"
+            android:defaultValue="false"
+            android:summary="@string/plugin_auto_hide"
+            android:title="@string/plugin_auto_hide" />
+
+    <CheckBoxPreference
+            android:key="calls_enable_search"
+            android:defaultValue="true"
+            android:title="@string/calls_enable_search"
+            android:summary="@string/calls_enable_search" />
+
+    <PreferenceCategory android:title="@string/last_sms" />
+
+    <ListPreference
+            android:defaultValue="3"
+            android:entries="@array/linesArray"
+            android:entryValues="@array/linesValues"
+            android:key="sms_num"
+            android:title="@string/number_of_lines" />
+
+    <CheckBoxPreference
+            android:key="sms_show_read"
+            android:defaultValue="true"
+            android:title="@string/sms_show_read"
+            android:summary="@string/sms_show_read" />
+
+    <CheckBoxPreference
+            android:key="sms_auto_hide"
+            android:defaultValue="false"
+            android:summary="@string/plugin_auto_hide"
+            android:title="@string/plugin_auto_hide" />
+
+    <CheckBoxPreference
+            android:key="sms_enable_search"
+            android:defaultValue="true"
+            android:title="@string/sms_enable_search"
+            android:summary="@string/sms_enable_search" />
 
 </PreferenceScreen>

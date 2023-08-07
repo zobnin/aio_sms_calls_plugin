@@ -22,4 +22,10 @@
     <string name="by_symbols">durch Symbole</string>
     <string name="by_last_name">Nach Nachname</string>
     <string name="none">Keiner</string>
+    <string name="by_first_name">Namentlich</string>
+    <string name="sms_show_read">Gelesene SMS anzeigen</string>
+    <string name="calls_show_only_missed">Nur verpasste Anrufe</string>
+    <string name="plugin_auto_hide">Leeres Plugin automatisch ausblenden</string>
+    <string name="sms_enable_search">Aktivieren Sie die SMS-Suche</string>
+    <string name="calls_enable_search">Anrufsuche aktivieren</string>
 </resources>

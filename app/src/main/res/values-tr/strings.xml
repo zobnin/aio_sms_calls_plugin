@@ -22,4 +22,10 @@
     <string name="by_symbols">Sembollerle</string>
     <string name="by_last_name">Soyadına göre</string>
     <string name="none">Yok</string>
+    <string name="by_first_name">İsimle</string>
+    <string name="sms_show_read">Okunan SMS\'i göster</string>
+    <string name="calls_show_only_missed">Sadece cevapsız aramalar</string>
+    <string name="plugin_auto_hide">Boş eklentiyi otomatik olarak gizle</string>
+    <string name="sms_enable_search">SMS aramayı etkinleştir</string>
+    <string name="calls_enable_search">Çağrı aramayı etkinleştir</string>
 </resources>

@@ -1,4 +1,4 @@
-package ru.execbit.aiosmscallslog
+package ru.execbit.aiosmscallslog.calls
 
 import android.content.Context
 import android.provider.CallLog
@@ -22,14 +22,16 @@ object Calls {
                 val name = cursor.getString(cursor.getColumnIndex(CallLog.Calls.CACHED_NAME))
                 val type = cursor.getInt(cursor.getColumnIndex(CallLog.Calls.TYPE))
                 val date = cursor.getLong(cursor.getColumnIndex(CallLog.Calls.DATE))
+                val duration = cursor.getLong(cursor.getColumnIndex(CallLog.Calls.DURATION))
 
                 if (number == null) continue
                 if (type == CallLog.Calls.BLOCKED_TYPE) continue
 
                 val direction = when (type) {
-                    CallLog.Calls.OUTGOING_TYPE -> "outgoing"
                     CallLog.Calls.INCOMING_TYPE -> "incoming"
+                    CallLog.Calls.OUTGOING_TYPE -> "outgoing"
                     CallLog.Calls.MISSED_TYPE -> "missed"
+                    CallLog.Calls.REJECTED_TYPE -> "rejected"
                     else -> ""
                 }
 
@@ -37,7 +39,8 @@ object Calls {
                     number = number,
                     cachedName = name ?: "",
                     date = date,
-                    direction = direction
+                    direction = direction,
+                    duration = duration,
                 )
                 calls.add(call)
             }

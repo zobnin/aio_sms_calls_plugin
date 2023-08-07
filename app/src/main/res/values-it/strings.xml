@@ -24,4 +24,10 @@
     <string name="by_symbols">Da simboli</string>
     <string name="by_last_name">Per cognome</string>
     <string name="none">Nessuna</string>
+    <string name="by_first_name">Per nome</string>
+    <string name="sms_show_read">Mostra SMS letti</string>
+    <string name="calls_show_only_missed">Solo chiamate perse</string>
+    <string name="plugin_auto_hide">Nascondi automaticamente il plugin vuoto</string>
+    <string name="sms_enable_search">Abilita la ricerca SMS</string>
+    <string name="calls_enable_search">Abilita la ricerca delle chiamate</string>
 </resources>

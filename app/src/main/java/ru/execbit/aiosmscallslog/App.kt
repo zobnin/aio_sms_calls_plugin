@@ -1,21 +1,31 @@
 package ru.execbit.aiosmscallslog
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.content.IntentFilter
 import android.os.Build
+import android.provider.Telephony
 import com.mohamadamin.kpreferences.base.KPreferenceManager
+import ru.execbit.aiosmscallslog.calls.CallsPluginReceiver
+import ru.execbit.aiosmscallslog.sms.SmsPluginReceiver
 
 class App: Application() {
     companion object {
-        const val REQUIRED_AIO_VERSION = "2.7.30-beta8"
-        var PACKAGE_NAME: String? = null
+        const val REQUIRED_AIO_VERSION = "2.7.30"
+        const val AIO_API_VERSION = 2
+
+        // Holding app context is not a memory leak
+        @SuppressLint("StaticFieldLeak")
+        lateinit var context: Context
+            private set
     }
 
     override fun onCreate() {
         super.onCreate()
-        PACKAGE_NAME = packageName
+        context = applicationContext
 
         createNotificationChannel()
         KPreferenceManager.initialize(this, name = "${packageName}_preferences")
@@ -31,9 +41,9 @@ class App: Application() {
                 description = name
             }
 
-            val notificationManager: NotificationManager? =
-                getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
-            notificationManager?.createNotificationChannel(channel)
+            (getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager)?.apply {
+                createNotificationChannel(channel)
+            }
         }
     }
 }
